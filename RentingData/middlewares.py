@@ -114,4 +114,5 @@ class RandomUserAgentMiddleware(object):
     def process_request(self, request, spider):
         useragent = self.ua.random
         request.headers['User-Agent'] = useragent
+        # request.meta['proxy'] = 'http://49.79.194.201:61234'
         print('***************************************************')
