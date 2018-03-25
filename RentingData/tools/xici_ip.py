@@ -30,7 +30,7 @@ def crawl_ips():
     ip_list = []
     with open(log_file_path, 'w') as log_file:
          #next_page不存在时才说明有下一页
-        while len(disabled_next_btn)==0 and len(ip_list)<1000:
+        while len(disabled_next_btn)==0 and len(ip_list)<50000:
             ''' 这层循环是新页面 '''
             print('---------------- 第%d页 -------------------' % start_index, file=log_file)
             re = requests.get(host % start_index, headers=headers)
@@ -58,9 +58,8 @@ def crawl_ips():
                     else:
                         speed_time = 0
                         connect_time = 0
-                    id = get_md5(ip+port+net_prot)
 
-                    ip_list.append((id, ip, port, net_prot, speed_time, connect_time))
+                    ip_list.append((ip, port, net_prot, speed_time, connect_time))
                 print(len(ip_list), file=log_file)
             
             time.sleep(1)
@@ -72,7 +71,7 @@ def crawl_ips():
             with conn.cursor() as cursor:
                 for ip_info in ip_list:
                     print(ip_info, file=log_file)
-                    cursor.execute('insert into ip_pools(id, ip, port, net_prot, speed_time, connect_time) values(%s, %s, %s, %s, %s, %s)',ip_info)
+                    cursor.execute('insert low_priority into ip_pools(ip, port, net_prot, speed_time, connect_time) values(%s, %s, %s, %s, %s)',ip_info)
                     conn.commit()
         except Exception as e:
             print('[mysql err]', e)

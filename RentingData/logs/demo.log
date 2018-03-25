@@ -1,0 +1,9 @@
+CREATE TABLE `ip_pools` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ip` varchar(20) NOT NULL,
+  `port` varchar(10) NOT NULL,
+  `net_prot` varchar(30) DEFAULT 'http',
+  `connect_time` float(8,4) DEFAULT '0.0000',
+  `speed_time` float(8,4) DEFAULT '0.0000',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
