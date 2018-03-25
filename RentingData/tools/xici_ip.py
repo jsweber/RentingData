@@ -31,7 +31,7 @@ def crawl_ips():
     }
     ip_list = []
     #next_page不存在时才说明有下一页
-    while len(disabled_next_btn)==0 and len(ip_list)<1000:
+    while len(disabled_next_btn)==0 and len(ip_list)<50000:
         ''' 这层循环是新页面 '''
         print('---------------- 第%d页 -------------------' % start_index, file=log_file)
         re = requests.get(host % start_index, headers=headers)
@@ -90,5 +90,6 @@ class GetIp(object):
 
 if __name__ == '__main__':
     crawl_ips()
+    print('执行完毕')
 
     
