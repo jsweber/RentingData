@@ -3,4 +3,4 @@
 __pycache__
 __init__.py
 *.pyc
-logs/*
+Renting_data/logs/*

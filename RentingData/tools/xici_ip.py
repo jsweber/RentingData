@@ -12,7 +12,7 @@ import time
 
 projectdir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0,projectdir)
-from settings import MYSQL_HOST, MYSQL_DBNAME, MYSQL_USER, MYSQL_PASSWORD
+from settings import MYSQL_HOST, MYSQL_DBNAME, MYSQL_USER, MYSQL_PASSWORD, IP_CRAWL_NUM
 from utils.common import get_md5
 
 log_file_path = os.path.join(projectdir, 'logs', 'xici_ip.'+ str(time.time()) +'.log')    
@@ -30,7 +30,7 @@ def crawl_ips():
     ip_list = []
     with open(log_file_path, 'w') as log_file:
          #next_page不存在时才说明有下一页
-        while len(disabled_next_btn)==0 and len(ip_list)<50000:
+        while len(disabled_next_btn)==0 and len(ip_list)<IP_CRAWL_NUM:
             ''' 这层循环是新页面 '''
             print('---------------- 第%d页 -------------------' % start_index, file=log_file)
             re = requests.get(host % start_index, headers=headers)
