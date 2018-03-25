@@ -18,14 +18,14 @@ from utils.common import get_md5
 log_file_path = os.path.join(projectdir, 'logs', 'xici_ip.'+ str(time.time()) +'.log')    
 
 conn = pymysql.connect(host=MYSQL_HOST, user=MYSQL_USER, password=MYSQL_PASSWORD, db=MYSQL_DBNAME, charset='utf8')
-ua = UserAgent
+ua = UserAgent()
 
 def crawl_ips():
     host = 'http://www.xicidaili.com/nn/%s'
     start_index = 1
     disabled_next_btn = []
     headers = {
-        'User-Agent': UserAgent().random
+        'User-Agent': ua.random
     }
     ip_list = []
     with open(log_file_path, 'w') as log_file:
