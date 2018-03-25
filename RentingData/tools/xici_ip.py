@@ -80,19 +80,56 @@ def crawl_ips():
             print('插入数据end', file=log_file)
 
 class GetIp(object):
-    def delete_ip(self, ip):
-        pass
+    def __init__(self):
+        self.cursor = conn.cursor()
 
+    def delete_ip(self, id):
+        del_sql = 'delete from ip_pools where id=%s'
+        self.cursor.execute(del_sql, id)
+        conn.commit()
+        print('del '+str(id)+' success')
+        return True
 
-    def judge_ip(self, ip, port, net_prot):
-        pass
+    def judge_ip(self, id, url):
+        test_url = 'http://www.baidu.com'
+        try:
+            proxy_dict = {
+                'http': url,
+                'https': url
+            }
+            resp = requests.get(test_url, proxies=proxy_dict, timeout=15)
+        except Exception as e:
+            print(url + ' is invalid')
+            self.delete_ip(id)
+            return False
+        else:
+            code = resp.status_code
+            if code >=200 and code <300:
+                print(url + ' can be used')
+                return True
+            else:
+                print(url + ' is invalid')
+                self.delete_ip(id)
+                return False
+        
 
-    def random(self):
-        pass
+    def random_ip(self):
+        random_sql = r'select id, concat(lower(net_prot), "://",ip, ":" ,port) as url from ip_pools order by rand() limit 1;'
+        self.cursor.execute(random_sql)
+        result = self.cursor.fetchone()
+        id = result[0]
+        url = result[1]
+        if self.judge_ip(id, url): 
+            return url
+        else:
+            return self.random_ip()
+            
+        
 
 
 if __name__ == '__main__':
-    crawl_ips()
-    print('执行完毕')
-
+    # crawl_ips()
+    # print('执行完毕')
+    getip = GetIp()
+    print(getip.random_ip())
     
