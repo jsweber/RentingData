@@ -13,6 +13,11 @@ class LianjiaSpider(scrapy.Spider):
     #     'Referer': 'https://sh.lianjia.com/zufang/',
     #     'User-Agent':''
     # }
+    custom_settings = {
+        'COOKIES_ENABLED': False,
+        'DOWNLOAD_DELAY': 3,
+        'AUTOTHROTTLE_ENABLED': True,    
+    }
 
     def parse(self, response):
         #三种连接，1.tag分类，2.分页，3.具体的房子内容页面
