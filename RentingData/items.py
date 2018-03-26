@@ -20,10 +20,10 @@ class RentingItemLoader(ItemLoader):
 
 class LianjiaItem(scrapy.Item):
     id = scrapy.Field() #url => md5
-    url = scrap.Field()
+    url = scrapy.Field()
     main_title = scrapy.Field()
     price = scrapy.Field()
-    price_unit = scrapy.Filed()  #价格单位
+    price_unit = scrapy.Field()  #价格单位
     size = scrapy.Field() #房子尺寸
     floor = scrapy.Field() #楼层
     house_type = scrapy.Field() #户型
