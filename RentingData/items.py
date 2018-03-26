@@ -6,12 +6,17 @@
 # https://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
-
+from scrapy.loader.processors import MapCompose, TakeFirst, Join
+from scrapy.loader import ItemLoader
 
 class RentingdataItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass
+
+class RentingItemLoader(ItemLoader):
+    #自定义itemloader
+    default_output_processor = TakeFirst()
 
 class LianjiaItem(scrapy.Item):
     id = scrapy.Field() #url => md5
@@ -27,5 +32,7 @@ class LianjiaItem(scrapy.Item):
     community = scrapy.Field() #小区
     location = scrapy.Field() #位置
     publish_time = scrapy.Field() #房屋发布时间
+    update_time = scrapy.Field() #更新时间
+    seen_num = scrapy.Field() #看过的人
     contact = scrapy.Field()
     contact_man = scrapy.Field() #联系人    
