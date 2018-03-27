@@ -24,6 +24,7 @@ class LianjiaItem(scrapy.Item):
     main_title = scrapy.Field()
     price = scrapy.Field()
     price_unit = scrapy.Field()  #价格单位
+    decoration = scrapy.Field() #装修程度
     size = scrapy.Field() #房子尺寸
     floor = scrapy.Field() #楼层
     house_type = scrapy.Field() #户型
@@ -34,5 +35,4 @@ class LianjiaItem(scrapy.Item):
     publish_time = scrapy.Field() #房屋发布时间
     update_time = scrapy.Field() #更新时间
     seen_num = scrapy.Field() #看过的人
-    contact = scrapy.Field()
-    contact_man = scrapy.Field() #联系人    
+    contact = scrapy.Field()  
