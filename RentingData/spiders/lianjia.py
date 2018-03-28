@@ -52,7 +52,7 @@ class LianjiaSpider(scrapy.Spider):
         item_loader.add_css('main_title', '.title-wrapper .title .main::text')
         item_loader.add_css('price', '.overview .price .total::text')
         item_loader.add_css('price_unit', '.overview .price .unit span::text')
-        item_loader.add_css('decoration', '.overview .price .decoration::text')
+
         item_loader.add_css('size', '.overview .zf-room p:nth-of-type(1)::text')
         item_loader.add_css('house_type', '.overview .zf-room p:nth-of-type(2)::text')
         item_loader.add_css('floor', '.overview .zf-room p:nth-of-type(3)::text')
@@ -64,8 +64,6 @@ class LianjiaSpider(scrapy.Spider):
         item_loader.add_value('update_time', response.meta.get('update_time', 0))
         item_loader.add_value('seen_num', response.meta.get('seen_num', 0))
         item_loader.add_css('contact', '.overview .brokerInfo .phone::text')#['\n              4008761855\n                              ', '\n                40200\n                          ']
-
-
 
         house_item = item_loader.load_item()
         
