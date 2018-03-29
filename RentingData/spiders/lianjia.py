@@ -5,6 +5,9 @@ from urllib import parse
 from RentingData.items import RentingItemLoader, LianjiaItem
 from RentingData.utils.common import get_md5
 import re
+from scrapy.xlib.pydispatch import dispatcher
+from scrapy import signals
+
 
 class LianjiaSpider(scrapy.Spider):
     name = 'lianjia'
@@ -16,8 +19,21 @@ class LianjiaSpider(scrapy.Spider):
         'DOWNLOAD_DELAY': 3,
         'AUTOTHROTTLE_ENABLED': True,    
     }
+    handle_httpstatus_list = [404]
+
+    def __init__(self):
+        self.fails_urls = []
+        dispatcher.connect(self.handle_spider_closed, signals.spider_closed)
+
+    def handle_spider_closed(self, spider, reason):
+        self.crawler.stats.set_value('failed_urls', ','.join(self.fails_urls))
 
     def parse(self, response):
+        
+        if response.status == 404:
+            self.fails_urls.append(response.url)
+            self.crawler.stats.inc_value('failed_url_number')
+
         #三种连接，1.tag分类，2.分页，3.具体的房子内容页面
         #进入房子页面
         page_house_node_list = response.css('#house-lst li .info-panel')
