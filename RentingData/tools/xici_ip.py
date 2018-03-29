@@ -9,6 +9,7 @@ from fake_useragent import UserAgent
 import sys
 import os
 import time
+import pickle
 
 projectdir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0,projectdir)
@@ -80,6 +81,8 @@ def crawl_ips():
             print('插入数据end', file=log_file)
 
 class GetIp(object):
+    ips = set()
+
     def __init__(self):
         self.cursor = conn.cursor()
 
@@ -97,7 +100,7 @@ class GetIp(object):
                 'http': url,
                 'https': url
             }
-            resp = requests.get(test_url, proxies=proxy_dict, timeout=15)
+            resp = requests.get(test_url, proxies=proxy_dict, timeout=20)
         except Exception as e:
             print(url + ' is invalid')
             self.delete_ip(id)
@@ -111,7 +114,18 @@ class GetIp(object):
                 print(url + ' is invalid')
                 self.delete_ip(id)
                 return False
-        
+    def check(self):
+        get_all_sql = r'select id, concat(lower(net_prot), "://",ip, ":" ,port) as url from ip_pools'
+        self.cursor.execute(get_all_sql)
+        rs = self.cursor.fetchall()
+        for r in rs:
+            if self.judge_ip(r[0], r[1]):
+                self.ips.add(r[1])
+
+        with open(os.path.join(projectdir,'ip_pools_'+str(time.time())+ '.txt' ), 'wb') as f:
+            pickle.dump(self.ips, f)
+        return 'end'
+                
 
     def random_ip(self):
         random_sql = r'select id, concat(lower(net_prot), "://",ip, ":" ,port) as url from ip_pools order by rand() limit 1;'
@@ -131,5 +145,5 @@ if __name__ == '__main__':
     # crawl_ips()
     # print('执行完毕')
     getip = GetIp()
-    print(getip.random_ip())
+    print(getip.check())
     
