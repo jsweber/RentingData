@@ -7,6 +7,7 @@
 import pymysql
 import pymysql.cursors
 from twisted.enterprise import adbapi
+from RentingData.tools.send_emai import send_email
 
 class RentingdataPipeline(object):
     def process_item(self, item, spider):
@@ -40,6 +41,7 @@ class MysqlTwistedPipline(object):
     def handle_error(self, failure, item, spider):
         #处理异步插入的异常
         print (failure)
+        send_email('lianjia爬虫数据库插入异常')
 
     def do_insert(self, cursor, item):
         #执行具体的插入

@@ -4,6 +4,7 @@ from scrapy.http import Request
 from urllib import parse
 from RentingData.items import RentingItemLoader, LianjiaItem
 from RentingData.utils.common import get_md5
+from RentingData.tools.send_emai import send_email
 import re
 from scrapy.xlib.pydispatch import dispatcher
 from scrapy import signals
@@ -27,6 +28,7 @@ class LianjiaSpider(scrapy.Spider):
 
     def handle_spider_closed(self, spider, reason):
         self.crawler.stats.set_value('failed_urls', ','.join(self.fails_urls))
+        send_email('lianjia爬虫运行结束')
 
     def parse(self, response):
         
