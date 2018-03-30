@@ -9,7 +9,9 @@ import scrapy
 from scrapy.loader.processors import MapCompose, TakeFirst, Join
 from scrapy.loader import ItemLoader
 import time
+from datetime import datetime, timedelta
 import re
+from RentingData.settings import SQL_DATETIME_FORMAT, SQL_DATE_FORMAT
 
 class RentingdataItem(scrapy.Item):
     # define the fields for your item here like:
@@ -20,7 +22,7 @@ class RentingItemLoader(ItemLoader):
     #自定义itemloader
     default_output_processor = TakeFirst()
 
-phone_match = re.compile('\s|\\n')
+phone_match = re.compile(r'[\s\n]+')
 def dealContact(val):
     return re.sub(phone_match, '', v)
 
@@ -75,8 +77,23 @@ class LianjiaItem(scrapy.Item):
     def get_insert_sql(self):
         insert_sql = 'insert into lianjia_data(id, url, main_title, price, price_unit, size, floor, house_type, house_orientation, subway, community, location, publish_time, update_time, seen_num, contact, crawl_time) values( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, now()) ON DUPLICATE KEY UPDATE update_time=values(update_time), seen_num=values(seen_num), price=values(price)'
 
+        contact = re.sub(phone_match,'', self['contact'])
+        publish_time_match = re.match(r'\d+', self['publish_time'])
+        if publish_time_match:
+            days = int(publish_time_match.group(0))
+            publish_time = datetime.now() - timedelta(days=days)
+            publish_time = publish_time.strftime(SQL_DATETIME_FORMAT)
+        else:
+            publish_time = datetime.now().strftime(SQL_DATETIME_FORMAT)
+
+        try:
+            update_time_array = time.strptime(self['update_time'], '%Y.%m.%d')
+            update_time = time.strftime(SQL_DATETIME_FORMAT, update_time_array)
+        except Exception as e:
+            update_time = datetime.now().strftime(SQL_DATETIME_FORMAT)
+
         params = (self['id'], self['url'], self['main_title'], self['price'], self['price_unit'],    
         self['size'], self['floor'], self['house_type'], self['house_orientation'],
-        self['subway'], self['community'], self['location'], self['publish_time'], self['update_time'], self['seen_num'], self['contact'])
+        self['subway'], self['community'], self['location'], publish_time, update_time, self['seen_num'], contact)
 
         return insert_sql, params
