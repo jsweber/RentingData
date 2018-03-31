@@ -68,6 +68,9 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {
    'RentingData.pipelines.MysqlTwistedPipline': 300,
 }
+DOWNLOAD_TIMEOUT = 15
+REDIRECT_ENABLED = False
+DEPTH_LIMIT=0
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
