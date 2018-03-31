@@ -13,13 +13,13 @@ from scrapy import signals
 class LianjiaSpider(scrapy.Spider):
     name = 'lianjia'
     allowed_domains = ['lianjia.com']
-    start_urls = ['https://sh.lianjia.com/zufang/']
+    start_urls = ['https://sh.lianjia.com/zufang/pg1']
     base_url = 'https://sh.lianjia.com/zufang/'
     custom_settings = {
         'COOKIES_ENABLED': False,
         'DOWNLOAD_DELAY': 4,
         'AUTOTHROTTLE_ENABLED': True,
-        'JOBDIR': 'job_info/001'    
+        'JOBDIR': 'job_info/002'    
     }
     handle_httpstatus_list = [404]
 
@@ -45,7 +45,7 @@ class LianjiaSpider(scrapy.Spider):
             url = page_house_node.css('h2 a::attr(href)').extract_first('')
             update_time = page_house_node.css('.col-3 .price-pre::text').extract_first('0').split()[0]
             seen_num = page_house_node.css('.col-2 .num::text').extract_first('0')
-            yield Request(url=parse.urljoin(response.url, url), callback=self.parse_house_page, meta={'seen_num': seen_num,'update_time': update_time})
+            yield Request(url=parse.urljoin(response.url, url), callback=self.parse_house_page, meta={'seen_num': seen_num,'update_time': update_time}, dont_filter=True)
 
          #处理分页链接 
         page_str = response.css('.page-box.house-lst-page-box::attr("page-data")').extract_first('') #{"totalPage":100,"curPage":1}
@@ -54,7 +54,7 @@ class LianjiaSpider(scrapy.Spider):
             all_page = int(page_match.group(1))
             current_page = int(page_match.group(2))
             if current_page < all_page:
-                yield Request(url=parse.urljoin(response.url, '/zufang/pg%d/' % current_page), callback=self.parse)
+                yield Request(url=parse.urljoin(response.url, '/zufang/pg%d/' % current_page), callback=self.parse, , dont_filter=True)
 
         
         # 处理地区，租金等分类
