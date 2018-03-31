@@ -55,7 +55,7 @@ class LianjiaSpider(scrapy.Spider):
             current_page = int(page_match.group(2))
             print('****************************************',all_page,current_page,'*********************************')
             if current_page < all_page:
-                yield Request(url=parse.urljoin(response.url, '/zufang/pg%d/' % current_page), callback=self.parse, , dont_filter=True)
+                yield Request(url=parse.urljoin(response.url, '/zufang/pg%d/' % current_page), callback=self.parse,dont_filter=True)
 
         
         # 处理地区，租金等分类
