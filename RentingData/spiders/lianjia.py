@@ -13,7 +13,7 @@ from scrapy import signals
 class LianjiaSpider(scrapy.Spider):
     name = 'lianjia'
     allowed_domains = ['lianjia.com']
-    start_urls = ['https://sh.lianjia.com/zufang/pg1']
+    start_urls = ['https://sh.lianjia.com/zufang/']
     base_url = 'https://sh.lianjia.com/zufang/'
     custom_settings = {
         'COOKIES_ENABLED': False,
@@ -52,7 +52,7 @@ class LianjiaSpider(scrapy.Spider):
         page_match = re.match(r'{"totalPage":(\d+),"curPage":(\d+)}', page_str)
         if page_match:
             all_page = int(page_match.group(1))
-            current_page = int(page_match.group(2))
+            current_page = int(page_match.group(2)) + 1
             print('****************************************',all_page,current_page,'*********************************')
             if current_page < all_page:
                 yield Request(url=parse.urljoin(response.url, '/zufang/pg%d/' % current_page), callback=self.parse,dont_filter=True)
