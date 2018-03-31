@@ -56,11 +56,11 @@ class LianjiaSpider(scrapy.Spider):
                 yield Request(url=parse.urljoin(response.url, '/zufang/pg%d/' % current_page), callback=self.parse)
 
         
-        #处理地区，租金等分类
-        tag_links = response.css('.option-list a::text').extract()
-        print('')
-        for tag_link in tag_links:
-            yield Request(url=parse.urljoin(response.url,tag_link), callback=self.parse)
+        # 处理地区，租金等分类
+        # tag_links = response.css('.option-list a::text').extract()
+        # print('')
+        # for tag_link in tag_links:
+        #     yield Request(url=parse.urljoin(response.url,tag_link), callback=self.parse)
 
     def parse_house_page(self, response):
         item_loader = RentingItemLoader(item=LianjiaItem(), response=response)
