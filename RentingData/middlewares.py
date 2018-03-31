@@ -116,4 +116,4 @@ class RandomUserAgentMiddleware(object):
     def process_request(self, request, spider):
         useragent = self.ua.random
         request.headers['User-Agent'] = useragent
-        request.meta['proxy'] = self.getip.random_ip_fast()
+        # request.meta['proxy'] = self.getip.random_ip_fast()
