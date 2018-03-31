@@ -10,10 +10,12 @@ import sys
 import os
 import time
 import pickle
+import random
+import sys
 
 projectdir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0,projectdir)
-from settings import MYSQL_HOST, MYSQL_DBNAME, MYSQL_USER, MYSQL_PASSWORD, IP_CRAWL_NUM
+from settings import MYSQL_HOST, MYSQL_DBNAME, MYSQL_USER, MYSQL_PASSWORD, IP_CRAWL_NUM, IP_POOLS_FILE_NAME
 from utils.common import get_md5
 
 log_file_path = os.path.join(projectdir, 'logs', 'xici_ip.'+ str(time.time()) +'.log')    
@@ -86,6 +88,16 @@ class GetIp(object):
     def __init__(self):
         self.cursor = conn.cursor()
 
+        try:
+            with open(os.path.join(projectdir,IP_POOLS_FILE_NAME ), 'rb') as f:
+                ip_set = pickle.load(f)
+                self.ip_list = list(ip_set)
+        except Exception as e:
+            print(e)
+            self.ip_list = []
+
+        self.ip_list_len = len(self.ip_list)
+
     def delete_ip(self, id):
         del_sql = 'delete from ip_pools where id=%s'
         self.cursor.execute(del_sql, id)
@@ -100,7 +112,7 @@ class GetIp(object):
                 'http': url,
                 'https': url
             }
-            resp = requests.get(test_url, proxies=proxy_dict, timeout=20)
+            resp = requests.get(test_url, proxies=proxy_dict, timeout=15)
         except Exception as e:
             print(url + ' is invalid')
             self.delete_ip(id)
@@ -114,20 +126,25 @@ class GetIp(object):
                 print(url + ' is invalid')
                 self.delete_ip(id)
                 return False
-    def check(self):
-        get_all_sql = r'select id, concat(lower(net_prot), "://",ip, ":" ,port) as url from ip_pools'
+    def check(self, check_num=-1):
+        if check_num > 0:
+            limit_num = ' limit '+str(check_num)
+        else:
+            limit_num = ''
+        get_all_sql = r'select id, concat(lower(net_prot), "://",ip, ":" ,port) as url from ip_pools'+limit_num
+        print(get_all_sql)
         self.cursor.execute(get_all_sql)
         rs = self.cursor.fetchall()
         for r in rs:
             if self.judge_ip(r[0], r[1]):
                 self.ips.add(r[1])
 
-        with open(os.path.join(projectdir,'ip_pools_'+str(time.time())+ '.txt' ), 'wb') as f:
+        with open(os.path.join(projectdir,IP_POOLS_FILE_NAME ), 'wb') as f:
             pickle.dump(self.ips, f)
         return 'end'
                 
 
-    def random_ip(self):
+    def random_ip_by_sql(self):
         random_sql = r'select id, concat(lower(net_prot), "://",ip, ":" ,port) as url from ip_pools order by rand() limit 1;'
         self.cursor.execute(random_sql)
         result = self.cursor.fetchone()
@@ -137,13 +154,45 @@ class GetIp(object):
             return url
         else:
             return self.random_ip()
+    
+    def random_ip_fast(self):
+        if self.ip_list_len == 0:
+            print('no fast ip')
+            return self.random_ip_by_sql()
+        else:
+            return self.ip_list[random.randint(0, self.ip_list_len-1)]
             
         
 
 
 if __name__ == '__main__':
-    # crawl_ips()
-    # print('执行完毕')
-    getip = GetIp()
-    print(getip.check())
+    args = sys.argv
+    #第一参数是文件名，真正有用的参数从下标1开始
+    is_start_crawl = False
+    is_start_check = False
+    check_num = -1
+
+    for i in range(1, len(args)):
+        print(args[i])
+        if args[i] == 'help':
+            print('1.crawl 命令开始爬取 | ', '2.check [int 验证的ip数量] 命令开始验证爬取的ip | ', '3.注意每次只能输入一个命令，不支持同时执行')
+        if args[i] == 'crawl':
+            is_start_crawl = True
+        if args[i] == 'check':
+            is_start_check = True
+            try:
+                check_num = int(args[i+1])
+            except Exception as e:
+                pass
+
+    if is_start_crawl and (not is_start_check):
+        print('开始爬取西刺')
+        crawl_ips()
+        print('执行完毕')
+
+    if (not is_start_crawl) and is_start_check:
+        print('开始检查')
+        getip = GetIp()
+        getip.check(check_num=check_num)
+        print('检查结束')
     
