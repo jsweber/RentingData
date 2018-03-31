@@ -99,3 +99,4 @@ SQL_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 SQL_DATE_FORMAT = '%Y-%m-%d'
 
 IP_CRAWL_NUM = 10000
+IP_POOLS_FILE_NAME = 'ip_pools.txt'

@@ -7,6 +7,7 @@
 
 from scrapy import signals
 from fake_useragent import UserAgent
+from RentingData.tools.xici_ip import GetIp
 
 class RentingdataSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -106,6 +107,7 @@ class RandomUserAgentMiddleware(object):
     def __init__(self, crawler):
         super(RandomUserAgentMiddleware, self).__init__()
         self.ua = UserAgent()
+        self.getip = GetIp()
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -114,4 +116,4 @@ class RandomUserAgentMiddleware(object):
     def process_request(self, request, spider):
         useragent = self.ua.random
         request.headers['User-Agent'] = useragent
-        # request.meta['proxy'] = 'http://49.79.194.201:61234'
+        request.meta['proxy'] = self.getip.random_ip_fast()

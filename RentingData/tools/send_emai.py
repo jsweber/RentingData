@@ -19,6 +19,6 @@ def send_email(content='邮件内容', title='no data no life 爬虫运行通知
         server.sendmail(my_sender, my_user, msg.as_string())
         server.quit()# 关闭连接
         return True
-    except Exception as e
+    except Exception as e:
         print('[email send failed]',e)
         return False
