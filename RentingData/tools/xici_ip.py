@@ -84,7 +84,7 @@ def crawl_ips():
 
 class GetIp(object):
     ips = set()
-
+    count = 0
     def __init__(self):
         self.cursor = conn.cursor()
 
@@ -105,17 +105,18 @@ class GetIp(object):
         print('del '+str(id)+' success')
         return True
 
-    def judge_ip(self, id, url):
+    def judge_ip(self, url, id='', timeout=15):
         test_url = 'http://www.baidu.com'
         try:
             proxy_dict = {
                 'http': url,
                 'https': url
             }
-            resp = requests.get(test_url, proxies=proxy_dict, timeout=15)
+            resp = requests.get(test_url, proxies=proxy_dict, timeout=timeout)
         except Exception as e:
             print(url + ' is invalid')
-            self.delete_ip(id)
+            if id != '':
+                self.delete_ip(id)
             return False
         else:
             code = resp.status_code
@@ -124,7 +125,8 @@ class GetIp(object):
                 return True
             else:
                 print(url + ' is invalid')
-                self.delete_ip(id)
+                if id != '':
+                    self.delete_ip(id)
                 return False
     def check(self, check_num=-1):
         if check_num > 0:
@@ -136,7 +138,7 @@ class GetIp(object):
         self.cursor.execute(get_all_sql)
         rs = self.cursor.fetchall()
         for r in rs:
-            if self.judge_ip(r[0], r[1]):
+            if self.judge_ip(r[1], r[2]):
                 self.ips.add(r[1])
 
         with open(os.path.join(projectdir,IP_POOLS_FILE_NAME ), 'wb') as f:
@@ -150,17 +152,22 @@ class GetIp(object):
         result = self.cursor.fetchone()
         id = result[0]
         url = result[1]
-        if self.judge_ip(id, url): 
+        if self.judge_ip(url, id): 
             return url
         else:
-            return self.random_ip()
+            return self.random_ip_by_sql()
     
     def random_ip_fast(self):
         if self.ip_list_len == 0:
             print('no fast ip')
             return self.random_ip_by_sql()
         else:
-            return self.ip_list[random.randint(0, self.ip_list_len-1)]
+            if len(self.ip_list)>0:
+                url = self.ip_list.pop()
+            if self.judge_ip(url, timeout=10): 
+                return url
+            else:
+                return self.random_ip_fast()
             
         
 
