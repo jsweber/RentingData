@@ -17,8 +17,9 @@ class LianjiaSpider(scrapy.Spider):
     base_url = 'https://sh.lianjia.com/zufang/'
     custom_settings = {
         'COOKIES_ENABLED': False,
-        'DOWNLOAD_DELAY': 3,
-        'AUTOTHROTTLE_ENABLED': True,    
+        'DOWNLOAD_DELAY': 4,
+        'AUTOTHROTTLE_ENABLED': True,
+        'JOBDIR': 'job_info/001'    
     }
     handle_httpstatus_list = [404]
 
