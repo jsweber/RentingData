@@ -164,6 +164,8 @@ class GetIp(object):
         else:
             if len(self.ip_list)>0:
                 url = self.ip_list.pop()
+            else:
+                return 'http://localhost'
             if self.judge_ip(url, timeout=10): 
                 return url
             else:
