@@ -13,7 +13,7 @@ from scrapy import signals
 class LianjiaSpider(scrapy.Spider):
     name = 'lianjia'
     allowed_domains = ['lianjia.com']
-    start_urls = ['https://sh.lianjia.com/zufang/']
+    start_urls = ['https://hz.lianjia.com/zufang/']
     base_url = 'https://sh.lianjia.com/zufang/'
     custom_settings = {
         'COOKIES_ENABLED': False,
