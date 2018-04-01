@@ -13,8 +13,10 @@ from scrapy import signals
 class LianjiaSpider(scrapy.Spider):
     name = 'lianjia'
     allowed_domains = ['lianjia.com']
-    start_urls = ['https://hz.lianjia.com/zufang/']
-    base_url = 'https://sh.lianjia.com/zufang/'
+    start_urls = ['https://sh.lianjia.com/zufang/']
+    pageNum = 0
+    allPage = 500
+    startPage = 100
     custom_settings = {
         'COOKIES_ENABLED': False,
         'DOWNLOAD_DELAY': 4,
@@ -45,17 +47,20 @@ class LianjiaSpider(scrapy.Spider):
             url = page_house_node.css('h2 a::attr(href)').extract_first('')
             update_time = page_house_node.css('.col-3 .price-pre::text').extract_first('0').split()[0]
             seen_num = page_house_node.css('.col-2 .num::text').extract_first('0')
-            yield Request(url=parse.urljoin(response.url, url), callback=self.parse_house_page, meta={'seen_num': seen_num,'update_time': update_time}, dont_filter=True)
+            yield Request(url=parse.urljoin(response.url, url), callback=self.parse_house_page, meta={'seen_num': seen_num,'update_time': update_time})
 
          #处理分页链接 
-        page_str = response.css('.page-box.house-lst-page-box::attr("page-data")').extract_first('') #{"totalPage":100,"curPage":1}
-        page_match = re.match(r'{"totalPage":(\d+),"curPage":(\d+)}', page_str)
-        if page_match:
-            all_page = int(page_match.group(1))
-            current_page = int(page_match.group(2)) + 1
-            print('****************************************',all_page,current_page,'*********************************')
-            if current_page < all_page:
-                yield Request(url=parse.urljoin(response.url, '/zufang/pg%d/' % current_page), callback=self.parse,dont_filter=True)
+        # page_str = response.css('.page-box.house-lst-page-box::attr("page-data")').extract_first('') #{"totalPage":100,"curPage":1}
+        # page_match = re.match(r'{"totalPage":(\d+),"curPage":(\d+)}', page_str)
+        # if page_match:
+            # all_page = int(page_match.group(1))
+            # current_page = int(page_match.group(2)) + 1
+            # print('****************************************',all_page,current_page,'*********************************')
+            # if current_page < all_page:
+        if self.pageNum < self.allPage:
+            self.pageNum+=1
+            current_page = self.startPage+self.pageNum
+            yield Request(url=parse.urljoin(response.url, '/zufang/pg%d/' % current_page), callback=self.parse)
 
         
         # 处理地区，租金等分类
