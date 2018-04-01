@@ -138,7 +138,6 @@ class GetIp(object):
         self.cursor.execute(get_all_sql)
         rs = self.cursor.fetchall()
         for r in rs:
-            print(r)
             if self.judge_ip(r[1], r[0]):
                 self.ips.add(r[1])
 
