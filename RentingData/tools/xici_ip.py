@@ -65,7 +65,7 @@ def crawl_ips():
                     ip_list.append((ip, port, net_prot, speed_time, connect_time))
                 print(len(ip_list), file=log_file)
             
-            time.sleep(1)
+            time.sleep(3)
             print('disabled按钮',disabled_next_btn, file=log_file)
         
         #存入数据库
@@ -138,7 +138,8 @@ class GetIp(object):
         self.cursor.execute(get_all_sql)
         rs = self.cursor.fetchall()
         for r in rs:
-            if self.judge_ip(r[1], r[2]):
+            print(r)
+            if self.judge_ip(r[1], r[0]):
                 self.ips.add(r[1])
 
         with open(os.path.join(projectdir,IP_POOLS_FILE_NAME ), 'wb') as f:
