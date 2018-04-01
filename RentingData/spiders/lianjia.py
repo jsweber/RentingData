@@ -21,7 +21,7 @@ class LianjiaSpider(scrapy.Spider):
         'COOKIES_ENABLED': False,
         'DOWNLOAD_DELAY': 4,
         'AUTOTHROTTLE_ENABLED': True,
-        'JOBDIR': 'job_info/002'    
+        'JOBDIR': 'job_info/003'    
     }
     handle_httpstatus_list = [404]
 
