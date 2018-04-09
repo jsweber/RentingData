@@ -103,3 +103,6 @@ SQL_DATE_FORMAT = '%Y-%m-%d'
 
 IP_CRAWL_NUM = 10000
 IP_POOLS_FILE_NAME = 'ip_pools.txt'
+
+#猎聘网搜索的字段
+LIEPIN_SEARCH_WORD='前端开发工程师'
