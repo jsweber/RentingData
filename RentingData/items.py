@@ -97,3 +97,27 @@ class LianjiaItem(scrapy.Item):
         self['subway'], self['community'], self['location'], publish_time, update_time, self['seen_num'], contact)
 
         return insert_sql, params
+
+
+
+#猎聘item
+
+class LiepinItemLoader(ItemLoader):
+    #自定义itemloader
+    default_output_processor = TakeFirst()
+
+salaryPattern = re.compile(u".*?([\u4e00-\u9fa5]+|[0-9-]+?[\u4e00-\u9fa5]+).*")
+def getSalary(s):
+    salary = re.match(salaryPattern, s)
+    if salary:
+        return salary.group(1)
+    else:
+        return '面议'
+
+class LiepinItem(scrapy.Item):
+    job_id = scrapy.Field()
+    job_url = scrapy.Field()
+    job_name = scrapy.Field()
+    salary = scrapy.Field()
+
+
