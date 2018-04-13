@@ -97,3 +97,41 @@ class LianjiaItem(scrapy.Item):
         self['subway'], self['community'], self['location'], publish_time, update_time, self['seen_num'], contact)
 
         return insert_sql, params
+
+
+
+#猎聘item
+
+class LiepinItemLoader(ItemLoader):
+    #自定义itemloader
+    default_output_processor = TakeFirst()
+
+salaryPattern = re.compile(u".*?([\u4e00-\u9fa5]+|[0-9-]+?[\u4e00-\u9fa5]+).*")
+def getSalary(s):
+    salary = re.match(salaryPattern, s)
+    if salary:
+        return salary.group(1)
+    else:
+        return '面议'
+
+class LiepinItem(scrapy.Item):
+    job_id = scrapy.Field()
+    job_url = scrapy.Field()
+    job_name = scrapy.Field()
+    company = scrapy.Field()
+    salary = scrapy.Field()
+    work_location = scrapy.Field()
+    publish_time = scrapy.Field()
+    required_list = scrapy.Field()
+    welfare_list = scrapy.Field()
+    job_describe = scrapy.Field()
+    crawl_time = scrapy.Field()
+
+    def get_insert_sql(self):
+        insert_sql = 'insert into liepin_2018_4(job_id, job_url, job_name, company, salary, work_location, publish_time, required_list, welfare_list, job_describe, crawl_time) values( %s, %s, %s,%s, %s, %s, %s, %s, %s,  %s, now()) ON DUPLICATE KEY UPDATE crawl_time=values(crawl_time), publish_time=values(publish_time), salary=values(salary)'
+
+        params = (self['job_id'], self['job_url'], self['job_name'], self['company'], self['salary'],    
+        self['work_location'], self['publish_time'], self['required_list'], self['welfare_list'],
+        self['job_describe'])
+
+        return insert_sql, params
