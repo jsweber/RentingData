@@ -106,7 +106,7 @@ class GetIp(object):
         return True
 
     def judge_ip(self, url, id='', timeout=15):
-        test_url = 'http://www.baidu.com'
+        test_url = 'https://www.liepin.com/'
         try:
             proxy_dict = {
                 'http': url,
