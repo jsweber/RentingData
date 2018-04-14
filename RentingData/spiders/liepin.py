@@ -13,7 +13,7 @@ from scrapy import signals
 class LiepinSpider(CrawlSpider):
     name = 'liepin'
     allowed_domains = ['liepin.com']
-    start_urls = ['https://www.liepin.com/job/1913168424.shtml']
+    start_urls = ['https://www.liepin.com/zhaopin/']
     custom_settings = {
         'COOKIES_ENABLED': False,
         'DOWNLOAD_DELAY': 4,
