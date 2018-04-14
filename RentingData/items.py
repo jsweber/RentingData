@@ -114,6 +114,9 @@ def getSalary(s):
     else:
         return '面议'
 
+def clearDefaultAction(d):
+    return d
+
 class LiepinItem(scrapy.Item):
     job_id = scrapy.Field()
     job_url = scrapy.Field()
@@ -128,7 +131,9 @@ class LiepinItem(scrapy.Item):
     welfare_list = scrapy.Field(
         input_processor = Join(',')
     )
-    job_describe = scrapy.Field()
+    job_describe = scrapy.Field(
+        output_processor = Join('\n')
+    )
 
     def get_insert_sql(self):
         insert_sql = 'insert into liepin_2018_4(job_id, job_url, job_name, company, salary, work_location, publish_time, required_list, welfare_list, job_describe, crawl_time) values( %s, %s, %s,%s, %s, %s, %s, %s, %s,  %s, now()) ON DUPLICATE KEY UPDATE crawl_time=values(crawl_time), publish_time=values(publish_time), salary=values(salary)'

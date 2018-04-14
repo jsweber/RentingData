@@ -12,13 +12,13 @@ from scrapy import signals
 
 class LiepinSpider(CrawlSpider):
     name = 'liepin'
-    allowed_domains = ['liepin.com']
-    start_urls = ['https://www.liepin.com/zhaopin/']
+    allowed_domains = ['www.liepin.com']
+    start_urls = ['https://www.liepin.com/zhaopin', 'https://www.liepin.com/it/']
     custom_settings = {
         'COOKIES_ENABLED': False,
         'DOWNLOAD_DELAY': 4,
         'AUTOTHROTTLE_ENABLED': True,
-        'JOBDIR': 'job_info/liepin002'    
+        'JOBDIR': 'job_info/liepin003'    
     }
 
     rules = (
