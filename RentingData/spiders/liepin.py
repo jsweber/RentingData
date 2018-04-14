@@ -18,7 +18,7 @@ class LiepinSpider(CrawlSpider):
         'COOKIES_ENABLED': False,
         'DOWNLOAD_DELAY': 4,
         'AUTOTHROTTLE_ENABLED': True,
-        'JOBDIR': 'job_info/liepin001'    
+        'JOBDIR': 'job_info/liepin002'    
     }
 
     rules = (
