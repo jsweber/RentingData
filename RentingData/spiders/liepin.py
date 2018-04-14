@@ -13,12 +13,12 @@ from scrapy import signals
 class LiepinSpider(CrawlSpider):
     name = 'liepin'
     allowed_domains = ['liepin.com']
-    start_urls = ['https://www.liepin.com/zhaopin/']
+    start_urls = ['https://www.liepin.com/job/1913168424.shtml']
     custom_settings = {
         'COOKIES_ENABLED': False,
         'DOWNLOAD_DELAY': 4,
         'AUTOTHROTTLE_ENABLED': True,
-        # 'JOBDIR': 'job_info/liepin001'    
+        'JOBDIR': 'job_info/liepin001'    
     }
 
     rules = (
@@ -48,7 +48,13 @@ class LiepinSpider(CrawlSpider):
         item_loader.add_value('job_id', get_md5(response.url))
         item_loader.add_value('job_url', response.url)
         item_loader.add_css('job_name', '.title-info h1::text')
+        item_loader.add_css('company', '.title-info h3 a::text')
         item_loader.add_css('salary', '.job-item-title::text')
+        item_loader.add_css('work_location', '.basic-infor span a::text')
+        item_loader.add_css('publish_time', '.basic-infor time::attr(title)')#2018年04月10日
+        item_loader.add_css('required_list', '.job-qualifications span::text')
+        item_loader.add_css('welfare_list', '.tag-list span::text')
+        item_loader.add_css('job_describe', '.job-description .content::text')
 
         job_item = item_loader.load_item()
         return job_item
