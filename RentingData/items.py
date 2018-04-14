@@ -122,16 +122,27 @@ class LiepinItem(scrapy.Item):
     salary = scrapy.Field()
     work_location = scrapy.Field()
     publish_time = scrapy.Field()
-    required_list = scrapy.Field()
-    welfare_list = scrapy.Field()
+    required_list = scrapy.Field(
+        input_processor = Join(',')
+    )
+    welfare_list = scrapy.Field(
+        input_processor = Join(',')
+    )
     job_describe = scrapy.Field()
-    crawl_time = scrapy.Field()
 
     def get_insert_sql(self):
         insert_sql = 'insert into liepin_2018_4(job_id, job_url, job_name, company, salary, work_location, publish_time, required_list, welfare_list, job_describe, crawl_time) values( %s, %s, %s,%s, %s, %s, %s, %s, %s,  %s, now()) ON DUPLICATE KEY UPDATE crawl_time=values(crawl_time), publish_time=values(publish_time), salary=values(salary)'
+        
+        salary_val = getSalary(self['salary'])
 
-        params = (self['job_id'], self['job_url'], self['job_name'], self['company'], self['salary'],    
-        self['work_location'], self['publish_time'], self['required_list'], self['welfare_list'],
+        try:
+            publish_time_array = time.strptime(self['publish_time'], '%Y年%m月%d日')
+            publish_time = time.strftime(SQL_DATETIME_FORMAT, publish_time_array)
+        except Exception as e:
+            publish_time = datetime.now().strftime(SQL_DATETIME_FORMAT)
+
+        params = (self['job_id'], self['job_url'], self['job_name'], self['company'], salary_val,    
+        self['work_location'], publish_time, self['required_list'], self['welfare_list'],
         self['job_describe'])
 
         return insert_sql, params
