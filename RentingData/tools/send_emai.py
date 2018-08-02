@@ -5,7 +5,7 @@ from email.header import Header
 
 def send_email(content='邮件内容', title='no data no life 爬虫运行通知'):
     my_sender='nodatanolife@qq.com'    # 发件人邮箱账号
-    my_pass = 'ghhxublhjmyldhad'              # 当时申请smtp给的口令
+    my_pass = 'deyqqpsuocwfdcgh'              # 当时申请smtp给的口令
     my_user=['951092973@qq.com']     # 收件人邮箱账号
 
     msg=MIMEText(content,'plain','utf-8')
@@ -22,3 +22,9 @@ def send_email(content='邮件内容', title='no data no life 爬虫运行通知
     except Exception as e:
         print('[email send failed]',e)
         return False
+
+if __name__ == '__main__':
+    if send_email('发送邮件', 'test main'):
+        print('发送成功')
+    else: 
+        print('发送失败')

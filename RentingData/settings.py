@@ -66,8 +66,11 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'RentingData.pipelines.MysqlTwistedPipline': 300,
+#    'RentingData.pipelines.MysqlTwistedPipline': 300,
+   'RentingData.pipelines.ESPipline': 300,
 }
+}
+DOWNLOAD_TIMEOUT = 15
 DOWNLOAD_TIMEOUT = 15
 REDIRECT_ENABLED = False
 DEPTH_LIMIT=0

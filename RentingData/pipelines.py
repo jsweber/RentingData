@@ -8,6 +8,8 @@ import pymysql
 import pymysql.cursors
 from twisted.enterprise import adbapi
 from RentingData.tools.send_emai import send_email
+import datetime
+from w3lib.html import remove_tags
 
 class RentingdataPipeline(object):
     def process_item(self, item, spider):
@@ -49,3 +51,8 @@ class MysqlTwistedPipline(object):
         insert_sql, params = item.get_insert_sql()
         cursor.execute(insert_sql, params)
         
+class ESPipline(object):
+    def process_item(self, item, spider):
+        #将数据写入es中
+        item.save_to_es()
+        return item

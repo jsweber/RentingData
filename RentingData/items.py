@@ -12,6 +12,7 @@ import time
 from datetime import datetime, timedelta
 import re
 from RentingData.settings import SQL_DATETIME_FORMAT, SQL_DATE_FORMAT
+from models.Job import Job
 
 class RentingdataItem(scrapy.Item):
     # define the fields for your item here like:
@@ -149,3 +150,48 @@ class LiepinItem(scrapy.Item):
         params = (self['job_id'], self['job_url'], self.get('job_name', '无数据'), self.get('company','无数据'), salary_val, self.get('work_location', '无数据'), publish_time, self.get('required_list', '无数据'), self.get('welfare_list', '无数据'), self.get('job_describe', '无数据'))
 
         return insert_sql, params
+
+class LiepinItemv2(scrapy.Item):
+    job_id = scrapy.Field()
+    url = scrapy.Field()
+    job_name = scrapy.Field()
+    location = scrapy.Field()
+    orginal_salary = scrapy.Field()
+    low_salary = scrapy.Field()
+    high_salary = scrapy.Field()
+    middle_salary = scrapy.Field()
+    publish_time = scrapy.Field()
+    # crawl_time = scrapy.Field()
+    welfare = scrapy.Field()
+    describe = scrapy.Field()
+    company = scrapy.Field()
+    degree = scrapy.Field()
+    exp = scrapy.Field()
+    language = scrapy.Field()
+    age = scrapy.Field()
+
+    def save_to_es(self):
+        job = new Job()
+
+        job.job_id = self['job_id']
+        job.url = self['url']
+        job.job_name = self['job_name']
+        job.location = self['location']
+        job.orginal_salary = self['orginal_salary']
+        job.low_salary = self['low_salary']
+        job.high_salary = self['high_salary']
+        job.middle_salary = self['middle_salary']
+        job.publish_time = self['publish_time']
+        job.crawl_time = datetime.datetime.now().strftime(SQL_DATETIME_FORMAT)
+        job.welfare = self['welfare']
+        job.describe = remove_tags(self['describe'])
+        job.company = self['company']
+        job.requires.degree = self['degree']
+        job.requires.exp = self['exp']
+        job.requires.language = self['language']
+        job.requires.age = self['age']
+        job.save()
+
+        return
+
+
