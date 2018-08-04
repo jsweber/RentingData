@@ -181,9 +181,9 @@ class LiepinItemv2(scrapy.Item):
         job = Job()
         job.job_id = self['job_id']
         job.url = self['url']
-        job.job_name = self['job_name']
+        job.job_name = self.get('job_name', '无')
 
-        job.location = self['location']
+        job.location = self.get('location', '无')
         if self.get('location'):
             cs = cityPattern.split(self.get('location'))
             try:
@@ -191,9 +191,9 @@ class LiepinItemv2(scrapy.Item):
             except Exception as e:
                 job.city = '其它'
 
-        job.orginal_salary = self.get('orginal_salary')
+        job.orginal_salary = self.get('orginal_salary', '面议')
         if self.get('orginal_salary'):  
-            salarys = salaryPattern2.search(self['orginal_salary'])
+            salarys = salaryPattern2.search(self.get('orginal_salary'))
             minVal = int(salarys.group(1))
             maxVal = int(salarys.group(2))
             job.low_salary = minVal
@@ -211,35 +211,35 @@ class LiepinItemv2(scrapy.Item):
             job.publish_time = time.strftime(SQL_DATETIME_FORMAT, time.localtime())
 
         job.crawl_time = time.strftime(SQL_DATETIME_FORMAT, time.localtime())
-        job.welfare = self['welfare']
-        job.describe = self['describe']
-        job.company = self['company']
+        job.welfare = self.get('welfare', '无')
+        job.describe = self.get('describe', '无')
+        job.company = self.get('company', '无')
 
         exp = -1  #不限
-        expObj = workExpPattern.search(self['exp'])
+        expObj = workExpPattern.search(self.get('exp', '无'))
         if expObj:
             exp = expObj.group(1)
 
         #35-65岁
         degree = '不限'
-        degreeObj = degreePattern.search(self['degree'])
+        degreeObj = degreePattern.search(self.get('degree', '无'))
         if degreeObj:
             degree = degreeObj.group()
 
         age = -1 #不限
-        ageObj = agePattern.search(self['age'])
+        ageObj = agePattern.search(self.get('age', '无'))
         if ageObj:
             age = ageObj.group(1)
             
 
         job.requires = {
             'degree': degree,
-            'orginal_degree': self['degree'],
+            'orginal_degree': self.get('degree', '不限'),
             'exp': int(exp),
-            'orginal_exp': self['exp'],
+            'orginal_exp': self.get('exp', '不限'),
             'language':self['language'],
             'age': int(age),
-            'orginal_age': self['age']
+            'orginal_age': self.get('age', '不限')
         }
         job.save()
 
