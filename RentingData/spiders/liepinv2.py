@@ -16,9 +16,10 @@ class LiepinSpider(CrawlSpider):
     start_urls = ['https://www.liepin.com/zhaopin', 'https://www.liepin.com/it/']
     custom_settings = {
         'COOKIES_ENABLED': False,
-        'DOWNLOAD_DELAY': 2,
+        'DOWNLOAD_DELAY': 3,
         'AUTOTHROTTLE_ENABLED': True,
-        # 'JOBDIR': 'job_info/liepin003'    
+        'AUTOTHROTTLE_MAX_DELAY':15 
+        'JOBDIR': 'job_info/liepinv2_1'    
     }
 
     rules = (
