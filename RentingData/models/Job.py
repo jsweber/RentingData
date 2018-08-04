@@ -8,6 +8,7 @@ class Job(DocType):
     url = Keyword()
     job_name = Text(analyzer='ik_max_word')
     location = Text(analyzer='ik_max_word')
+    city = Keyword()
     orginal_salary = Keyword()
     low_salary = Integer()
     high_salary = Integer()
@@ -19,10 +20,13 @@ class Job(DocType):
     company = Text(analyzer='ik_max_word')
     requires = Nested(
         properties = {
-            'degree': Text(analyzer='ik_max_word'),
-            'exp': Text(analyzer='ik_max_word'),
+            'degree': Keyword(),
+            'orginal_degree': Text(analyzer='ik_max_word'),
+            'exp': Integer(),
+            'orginal_exp': Text(analyzer='ik_max_word'),
             'language': Text(analyzer='ik_max_word'),
-            'age': Text(analyzer='ik_max_word')
+            'age': Integer(),
+            'orginal_age': Text(analyzer='ik_max_word'),
         }
     )
 

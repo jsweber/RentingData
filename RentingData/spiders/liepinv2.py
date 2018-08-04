@@ -11,12 +11,12 @@ from scrapy.xlib.pydispatch import dispatcher
 from scrapy import signals
 
 class LiepinSpider(CrawlSpider):
-    name = 'liepin'
+    name = 'liepinv2'
     allowed_domains = ['www.liepin.com']
     start_urls = ['https://www.liepin.com/zhaopin', 'https://www.liepin.com/it/']
     custom_settings = {
         'COOKIES_ENABLED': False,
-        'DOWNLOAD_DELAY': 5,
+        'DOWNLOAD_DELAY': 2,
         'AUTOTHROTTLE_ENABLED': True,
         # 'JOBDIR': 'job_info/liepin003'    
     }
@@ -49,18 +49,15 @@ class LiepinSpider(CrawlSpider):
         item_loader.add_value('url', response.url)
         item_loader.add_css('job_name', '.title-info h1::text')
         item_loader.add_css('location', '.basic-infor span a::text')
-        item_loader.add_css('orginal_salary', '.job-item-title::text')
-        item_loader.add_css('low_salary', '.job-item-title::text')
-        item_loader.add_css('high_salary', '.job-item-title::text')
-        item_loader.add_css('middle_salary', '.job-item-title::text')
-        item_loader.add_css('publish_time', '.basic-infor time::attr(title)')
-        item_loader.add_css('welfare', '.tag-list span::text')
+        item_loader.add_css('orginal_salary', '.job-item-title::text')#'面议\r\n'
+        item_loader.add_css('publish_time', '.basic-infor time::attr(title)')#2018年07月31日
+        item_loader.add_css('welfare', '.tag-list span::text')#['领导好', '岗位晋升', '五险一金', '公司规模大', '带薪年假', '定期体检', '技能培训', '节日礼物', '休闲餐点', '发展空间大', '上市公司', '免费班车', '包吃', '扁平管理', '国际化项目', '健身房']
         item_loader.add_css('describe', '.job-description .content::text')
         item_loader.add_css('company', '.title-info h3 a::text')
-        item_loader.add_css('degree', '.job-qualifications span::text')
-        item_loader.add_css('exp', '.job-qualifications span::text')
-        item_loader.add_css('language', '.job-qualifications span::text')
-        item_loader.add_css('age', '.job-qualifications span::text')
+        item_loader.add_css('degree', '.job-qualifications span:nth-of-type(1)::text')
+        item_loader.add_css('exp', '.job-qualifications span:nth-of-type(2)::text')
+        item_loader.add_css('language', '.job-qualifications span:nth-of-type(3)::text')
+        item_loader.add_css('age', '.job-qualifications span:nth-of-type(4)::text')
 
         job_item = item_loader.load_item()
         return job_item

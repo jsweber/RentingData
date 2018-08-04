@@ -8,11 +8,11 @@
 import scrapy
 from scrapy.loader.processors import MapCompose, TakeFirst, Join
 from scrapy.loader import ItemLoader
-import time
+import time, datetime
 from datetime import datetime, timedelta
 import re
-from RentingData.settings import SQL_DATETIME_FORMAT, SQL_DATE_FORMAT
-from models.Job import Job
+from RentingData.settings import SQL_DATETIME_FORMAT, SQL_DATE_FORMAT, phone_match, salaryPattern, timeStrpStr,salaryPattern2, salaryStrPattern, workExpPattern, degreePattern, agePattern, cityPattern
+from RentingData.models.Job import Job
 
 class RentingdataItem(scrapy.Item):
     # define the fields for your item here like:
@@ -23,7 +23,6 @@ class RentingItemLoader(ItemLoader):
     #自定义itemloader
     default_output_processor = TakeFirst()
 
-phone_match = re.compile(r'[\s\n]+')
 def dealContact(val):
     return re.sub(phone_match, '', v)
 
@@ -107,7 +106,6 @@ class LiepinItemLoader(ItemLoader):
     #自定义itemloader
     default_output_processor = TakeFirst()
 
-salaryPattern = re.compile(u".*?([\u4e00-\u9fa5]+|[0-9-]+?[\u4e00-\u9fa5]+).*")
 def getSalary(s):
     salary = re.match(salaryPattern, s)
     if salary:
@@ -151,19 +149,28 @@ class LiepinItem(scrapy.Item):
 
         return insert_sql, params
 
+
+def strpSalary(v):
+    r = salaryStrPattern.search(v)
+    if r:
+        return r.group(1)
+    return None
+
 class LiepinItemv2(scrapy.Item):
     job_id = scrapy.Field()
     url = scrapy.Field()
     job_name = scrapy.Field()
     location = scrapy.Field()
-    orginal_salary = scrapy.Field()
-    low_salary = scrapy.Field()
-    high_salary = scrapy.Field()
-    middle_salary = scrapy.Field()
+    orginal_salary = scrapy.Field(
+        input_processor = MapCompose(strpSalary)
+    )
     publish_time = scrapy.Field()
-    # crawl_time = scrapy.Field()
-    welfare = scrapy.Field()
-    describe = scrapy.Field()
+    welfare = scrapy.Field(
+        input_processor = Join(',')
+    )
+    describe = scrapy.Field(
+        input_processor = Join('')
+    )
     company = scrapy.Field()
     degree = scrapy.Field()
     exp = scrapy.Field()
@@ -171,25 +178,69 @@ class LiepinItemv2(scrapy.Item):
     age = scrapy.Field()
 
     def save_to_es(self):
-        job = new Job()
-
+        job = Job()
         job.job_id = self['job_id']
         job.url = self['url']
         job.job_name = self['job_name']
+
         job.location = self['location']
-        job.orginal_salary = self['orginal_salary']
-        job.low_salary = self['low_salary']
-        job.high_salary = self['high_salary']
-        job.middle_salary = self['middle_salary']
-        job.publish_time = self['publish_time']
-        job.crawl_time = datetime.datetime.now().strftime(SQL_DATETIME_FORMAT)
+        if self.get('location'):
+            cs = cityPattern.split(self.get('location'))
+            try:
+                job.city = cs[0]
+            except Exception as e:
+                job.city = '其它'
+
+        job.orginal_salary = self.get('orginal_salary')
+        if self.get('orginal_salary'):  
+            salarys = salaryPattern2.search(self['orginal_salary'])
+            minVal = int(salarys.group(1))
+            maxVal = int(salarys.group(2))
+            job.low_salary = minVal
+            job.high_salary = maxVal
+            job.middle_salary = (minVal + maxVal)/2
+        else:
+            job.low_salary = -1
+            job.high_salary = -1
+            job.middle_salary = -1
+
+        if self.get('publish_time'):
+            struct_time = time.strptime(self['publish_time'], timeStrpStr)
+            job.publish_time = time.strftime(SQL_DATETIME_FORMAT,struct_time)
+        else:
+            job.publish_time = time.strftime(SQL_DATETIME_FORMAT, time.localtime())
+
+        job.crawl_time = time.strftime(SQL_DATETIME_FORMAT, time.localtime())
         job.welfare = self['welfare']
-        job.describe = remove_tags(self['describe'])
+        job.describe = self['describe']
         job.company = self['company']
-        job.requires.degree = self['degree']
-        job.requires.exp = self['exp']
-        job.requires.language = self['language']
-        job.requires.age = self['age']
+
+        exp = -1  #不限
+        expObj = workExpPattern.search(self['exp'])
+        if expObj:
+            exp = expObj.group(1)
+
+        #35-65岁
+        degree = '不限'
+        degreeObj = degreePattern.search(self['degree'])
+        if degreeObj:
+            degree = degreeObj.group()
+
+        age = -1 #不限
+        ageObj = agePattern.search(self['age'])
+        if ageObj:
+            age = ageObj.group(1)
+            
+
+        job.requires = {
+            'degree': degree,
+            'orginal_degree': self['degree'],
+            'exp': int(exp),
+            'orginal_exp': self['exp'],
+            'language':self['language'],
+            'age': int(age),
+            'orginal_age': self['age']
+        }
         job.save()
 
         return

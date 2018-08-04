@@ -8,6 +8,7 @@
 #     https://doc.scrapy.org/en/latest/topics/settings.html
 #     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+import re,sys,os
 
 BOT_NAME = 'RentingData'
 
@@ -69,7 +70,7 @@ ITEM_PIPELINES = {
 #    'RentingData.pipelines.MysqlTwistedPipline': 300,
    'RentingData.pipelines.ESPipline': 300,
 }
-}
+
 DOWNLOAD_TIMEOUT = 15
 DOWNLOAD_TIMEOUT = 15
 REDIRECT_ENABLED = False
@@ -95,7 +96,7 @@ DEPTH_LIMIT=0
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
+sys.path.insert(0, os.path.dirname(__file__))
 MYSQL_HOST='127.0.0.1'
 MYSQL_DBNAME='renting_data'
 MYSQL_USER='root'
@@ -106,6 +107,25 @@ SQL_DATE_FORMAT = '%Y-%m-%d'
 
 IP_CRAWL_NUM = 10000
 IP_POOLS_FILE_NAME = 'ip_pools.txt'
+#猎聘爬虫2用，把日期解析成struct_time
+timeStrpStr = '%Y年%m月%d日'
 
-#猎聘网搜索的字段
-LIEPIN_SEARCH_WORD='前端开发工程师'
+#re.match只匹配字符串的开始，如果字符串开始不符合正则表达式，则匹配失败，函数返回None；而re.search匹配整个字符串，直到找到一个匹配。
+
+#解析字段的正则
+phone_match = re.compile(r'[\s\n]+')
+salaryPattern = re.compile(u".*?([\u4e00-\u9fa5]+|[0-9-]+?[\u4e00-\u9fa5]+).*")
+
+#下面正则猎聘2用,推荐用search，因为不要求完全匹配
+#薪水解析
+salaryPattern2 = re.compile(r'([\d\.]+)-([\d\.]+)万.*') #面议是匹配不到的，设置-1（面议）
+salaryStrPattern = re.compile(r'([\d\.]+-[\d\.]+万).*')
+#工作经验解析
+workExpPattern = re.compile(r'^(\d+).*') #工作经验不限是匹配不到的，设置-1(不限) 
+#学历
+degreePattern = re.compile(r'本科|大专|高中|硕士|研究生|中专|技校|博士|博士后|修士|留学|初中|小学|211|985')
+#经验
+agePattern = re.compile(r'^(\d+).*')
+#城市
+cityPattern = re.compile(r'-')
+
