@@ -237,7 +237,7 @@ class LiepinItemv2(scrapy.Item):
             'orginal_degree': self.get('degree', '不限'),
             'exp': int(exp),
             'orginal_exp': self.get('exp', '不限'),
-            'language':self['language'],
+            'language':self.get('language', '不限'),
             'age': int(age),
             'orginal_age': self.get('age', '不限')
         }
