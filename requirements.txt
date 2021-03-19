@@ -27,7 +27,7 @@ httplib2==0.9.1
 hyperlink==17.3.1
 idna==2.6
 incremental==17.5.0
-Jinja2==2.8
+Jinja2==2.11.3
 keyring==9.1
 keyrings.alt==1.1.1
 language-selector==0.1
