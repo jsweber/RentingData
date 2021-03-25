@@ -65,7 +65,7 @@ python-apt==1.1.0b5
 python-debian==0.1.29
 PyVirtualDisplay==0.2.1
 pyxdg==0.25
-PyYAML==3.11
+PyYAML==5.4
 queuelib==1.4.2
 reportlab==3.3.0
 requests==2.18.4
